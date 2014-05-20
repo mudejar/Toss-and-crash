@@ -3,6 +3,7 @@ local physics = require("physics")
 local utils = require("utils")
 local scene = storyboard.newScene()
 local vector = require("vector")
+local fsm = require("fsm")
 
 --local client = require("client")
 
@@ -54,7 +55,9 @@ function scene:createScene( event )
 
 
         local thickness = 10
-        function addRect(x,y,w,h,destructable,density)
+        
+        -- implement the rectangle objects as FSM's
+        --[[function addRect(x,y,w,h,destructable,density)
 --                local rect = display.newRect(x,y,w,h)
                 local rect = display.newImage ( scene.skySheet, 
                         scene.goodStartFrameForTextures + 
@@ -71,7 +74,8 @@ function scene:createScene( event )
                         physics.addBody(rect, "static", {density=denseness, friction=0.9, bounce=0.1})
                 end
                 rect.destructable = destructable
-        end
+        end --]]
+        
         function loadBird()
                 local options =
                         {
@@ -80,8 +84,8 @@ function scene:createScene( event )
                             height = 267,
                             numFrames = 9,
                             -- The params below are optional; used for dynamic resolution support
-                            sheetContentWidth = 900,  -- width of original 1x size of entire sheet
-                            sheetContentHeight = 900  -- height of original 1x size of entire sheet
+                            --sheetContentWidth = 900,  -- width of original 1x size of entire sheet
+                            --sheetContentHeight = 900  -- height of original 1x size of entire sheet
                         }
 
                 local imageSheet = graphics.newImageSheet( "spike_bird_sprite.png", options )
@@ -91,7 +95,7 @@ function scene:createScene( event )
                             name="walking",
                             start=1,
                             count=9,
-                            time=1000,
+                            time=10,
                             loopCount = 0,   -- Optional ; default is 0 (loop indefinitely)
                             loopDirection = "forward"    -- Optional ; values include "forward" or "bounce"
                         }
@@ -127,6 +131,8 @@ function scene:createScene( event )
         -- the floor
         addRect(0, centerY+100, floorLength, 10, false, 10.0)
         -- some stuff
+        
+        -- this makes a bunch of rectangle objects
         local steps=40
         for i=1,steps do
                 for j=1,steps do
@@ -353,6 +359,7 @@ end
     bullet.gravityScale = 0
     bullet:setLinearVelocity( 800,0 )
 end--]]
+
 -------------------------------------------------
 -- UPDATE
 -------------------------------------------------
