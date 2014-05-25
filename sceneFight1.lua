@@ -18,9 +18,69 @@ local fsm = require("fsm")
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
-        local group = self.view
+        -- declare states here for forward referencing
+        attackReady = {}
+        grabbedState = {}
+        flyingState = {}
+        collidingState = {}
+        idleAndUnhealthyState = {}
+        deadState = {}
+        attackFinishedState = {}
+        
+        ---------------------
+        -- attackReady state
+        ---------------------
+        
+        function attackReady:enter(owner)
+          owner.startTime = system.getTimer()
+          owner.x = owner.homex
+          owner.y = owner.homey
+          
+          function owner:touch (event)
+            if (event.phase == "began") then
+              self.fsm:changeState(grabbedState)
+            end
+            
+            return true
+          end
+          
+          owner:addEventListener("touch", owner)
+        end
+        
+        function attackReady:exit(owner)
+          -- unsubscribe event listeners
+          owner:removeEventListener("touch", owner)
+        end
+        
+        function attackReady:execute(owner)
+          print('attackReady:execute()')
+        end
+        
+        ---------------------
+        -- grabbedState
+        ---------------------
+        
+        function grabbedState:enter (owner)
+          print ('grabbedState:enter()' .. owner.name)
+          function owner:touch (event)
+            if (event.phase
+          
+          -- add event listeners
+          owner:addEventListener("touch", owner)
+        end
+        
+        function grabbedState:exit(owner)
+          
+        end
+        
+        function grabbedState:execute(owner)
+          
+        end
+
 
         
+        local group = self.view
+
                -- background 
         scene.background = display.newGroup()
         local bg = display.newImage("super-mario-level-wallpaper.png", 
@@ -55,9 +115,7 @@ function scene:createScene( event )
 
 
         local thickness = 10
-        
-        -- implement the rectangle objects as FSM's
-        --[[function addRect(x,y,w,h,destructable,density)
+        function addRect(x,y,w,h,destructable,density)
 --                local rect = display.newRect(x,y,w,h)
                 local rect = display.newImage ( scene.skySheet, 
                         scene.goodStartFrameForTextures + 
@@ -74,32 +132,36 @@ function scene:createScene( event )
                         physics.addBody(rect, "static", {density=denseness, friction=0.9, bounce=0.1})
                 end
                 rect.destructable = destructable
-        end --]]
-        
-        function loadBird()
+        end
+        function loadBird(x, y)
                 local options =
                         {
                             -- The params below are required
-                            width = 270,
-                            height = 267,
-                            numFrames = 9,
+                            width = 41,
+                            height = 42,
+                            numFrames = 64,
                             -- The params below are optional; used for dynamic resolution support
-                            --sheetContentWidth = 900,  -- width of original 1x size of entire sheet
-                            --sheetContentHeight = 900  -- height of original 1x size of entire sheet
                         }
 
-                local imageSheet = graphics.newImageSheet( "spike_bird_sprite.png", options )
+                local imageSheet = graphics.newImageSheet( "Fother-penguin.png", options )
 
                 local sequenceData =
                         {
-                            name="walking",
+                            name="turning",
                             start=1,
-                            count=9,
-                            time=10,
+                            count=64,
+                            time=8000,
                             loopCount = 0,   -- Optional ; default is 0 (loop indefinitely)
                             loopDirection = "forward"    -- Optional ; values include "forward" or "bounce"
                         }
-                return display.newSprite ( imageSheet, sequenceData )
+                local penguin = display.newSprite(imageSheet, sequenceData)
+                penguin.name = "linux"
+                penguin.fsm = fsm.new(penguin)
+                penguin.homex = x
+                penguin.homey = y
+                penguin.fsm:changeState(enterState)
+                
+                return penguin
 
       end
       
@@ -131,8 +193,6 @@ function scene:createScene( event )
         -- the floor
         addRect(0, centerY+100, floorLength, 10, false, 10.0)
         -- some stuff
-        
-        -- this makes a bunch of rectangle objects
         local steps=40
         for i=1,steps do
                 for j=1,steps do
@@ -248,6 +308,7 @@ function scene:createScene( event )
 -------------------------------------------------
 
         scene.player = loadBird()
+        scene.player:play()
         scene.world:insert(scene.player)
         physics.addBody(scene.player, "dynamic", {density=1.0, friction=0.7, bounce=0.1})
 
@@ -359,7 +420,6 @@ end
     bullet.gravityScale = 0
     bullet:setLinearVelocity( 800,0 )
 end--]]
-
 -------------------------------------------------
 -- UPDATE
 -------------------------------------------------
