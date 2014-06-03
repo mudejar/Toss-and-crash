@@ -17,10 +17,6 @@ local perspective = require("perspective")
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
-    local options = {
-        effect = "zoonOutInRotate",
-        time = 400
-    }
 
     -- OBJECTS
     local camera = perspective.createView()
@@ -86,7 +82,7 @@ function scene:createScene( event )
                         numFrames=768, sheetContentWidth=2048, 
                         sheetContentHeight=1536}
 
-    scene.skySheet = graphics.newImageSheet("super-mario-level-wallpaper.png", options)
+    scene.skySheet = graphics.newImageSheet("swamp-background.jpg", options)
     scene.goodStartFrameForTextures = 19*32 -- four rows of 32 at bottom of image
     scene.numGoodTextureFrames = 4*32
 
@@ -276,14 +272,12 @@ function scene:createScene( event )
             display.contentCenterX,
             display.contentCenterY)
             self.menuButton.start()--]]
-            storyboard.gotoScene("sceneFight2", options)
+            storyboard.gotoScene("startmenu")
         else
             self.menuButton = utils.makeButtonToScene("startmenu",
             "youlose.png", self.buttons, 
             display.contentCenterX,
             display.contentCenterY)
-
-            --storyboard.gotoScene("sceneFight2", options)
             --self.menuButton.start()
         end
 
